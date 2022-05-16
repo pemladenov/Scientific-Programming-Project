@@ -2,4 +2,21 @@
 
 {% block content %}
     <h1>{% block title %} Welcome to the Spotify Analyzer {% endblock %}</h1>
+   <img src="data:image/png;base64, {{ plot_url }}">
+
+   <div class="form">
+    <form action="{{ url_for('handle_data') }}" method="post">
+      <input type="text" placeholder="City" name="city" value="{{
+        request.form.city }}">
+       <input type="text" placeholder="Year" name="year" value="{{
+        request.form.year }}">
+      <input class="btn btn-default" type="submit" value="Search">
+    </form>
+    {% if error %}
+      <p class="error">Error: {{ error }}
+    {% endif %}
+  </div>
+
+  {% include 'result.html' %}
+
 {% endblock %}
