@@ -1,4 +1,5 @@
-from flask import Flask, render_template, url_for, request
+from os import set_handle_inheritable
+from flask import Flask, render_template, url_for, request, Response
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -6,6 +7,12 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import plotly
+import matplotlib.patches as mpatches
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import plotly.express as px
+import json
+
 
 sns.set(color_codes=True)
 
@@ -52,48 +59,64 @@ def home():
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
-@app.route('/result', methods=['POST'])
+
+def cleanup(dataframe, country):
+    df = dataframe.transpose()
+    df = df.iloc[1:, :]
+    df.columns = [country]
+    df.index= pd.to_datetime(df.index)
+    return df
+
+
+@app.route('/result', methods=['GET', 'POST'])
 def handle_data():
-    img = io.BytesIO()
-    city = request.form['city']
-    year = request.form['year']
-    df = pd.read_csv("data/avocado.csv")
-
-    df = df.drop(['4046', 
-              '4225', 
-              '4770', 
-              'Total Bags',
-              'Small Bags',
-              'Large Bags',
-              'XLarge Bags'], axis=1)
-
-    df['Date']= pd.to_datetime(df['Date'])
-
-    df = df.drop(df[(df.Date.dt.year != year) & (df.Date.dt.month != 1)].index)
-    df = df.drop(df[(df.type=="conventional")].index)
-    df = df[(df.region==city)]
-
-    fig, ax = plt.subplots(figsize=(8,5))
-    plt.ticklabel_format(style='plain')
-    ax.scatter(df['Date'], 
-            df['AveragePrice'], 
-            color="blue", 
-            alpha=1.0)
-    ax.set_xlabel('Date')
-    ax.set_ylabel('AveragePrice')
-    plt.savefig(img, format='png')
-    img.seek(0)
-
-    graph = base64.b64encode(img.getvalue()).decode()
-
-    return '<img src="data:image/png;base64,{}">'.format(graph)
+    country = request.form.get('column')
+    country2 = request.form.get('c2')
+    start_year = request.form.get('start_year')
+    end_year = request.form.get('end_year')
     
-## return render_template('result.html',graph=plt)
+    yearsentered = [start_year, end_year]
+    yearsentered.sort()
+    year1 = yearsentered[0]
+    year2 = yearsentered[1]
 
+    df = pd.read_csv("data/populationbycountry19802010millions.csv")
 
-@app.route("/")
+    df1 = df[df['Unnamed: 0'] == country]
+    df2 = df[df['Unnamed: 0'] == country2]
+    df1 = cleanup(df1, country)
+    df2 = cleanup(df2, country2)
+    df = pd.concat([df1, df2], axis=1)
+    start_year = pd.to_datetime(year1)
+    end_year = pd.to_datetime(year2)
+
+    df = df[start_year:end_year]
+    cols = df.columns
+    df = df[cols].apply(pd.to_numeric, errors='coerce')
+    df = df.pct_change()
+    fig = Figure()
+
+    fig = px.line(df, x=df.index, y=df.columns, markers=True, title="Comparison of the populution changes")
+    #fig = px.bar(df, x=df.index, y=df.columns, title="Comparison of the populution changes")
+    
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    #graphJSON.append(json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)) 
+
+    return render_template('result.html', graphJSON=graphJSON)
+
+@app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+
+    img = io.BytesIO()
+    df = pd.read_csv("data/populationbycountry19802010millions.csv")
+    df.dropna(inplace = True)
+
+    columnheaders = df['Unnamed: 0']
+    years = list(df.drop(['Unnamed: 0'], axis=1).columns.values)
+    print(years)
+
+
+    return render_template('index.html', columnheaders=columnheaders, years=years)
 
     
 if __name__ == "__main__":
