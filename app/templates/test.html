@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dropdown</title>
+</head>
+<body>
+    <select name="column" method="GET" action="/">
+        <option value="{{columnheaders[0]}}" selected>{{columnheaders[0]}}</option>
+        {% for column in columnheaders[1:] %}
+          <option value="{{column}}">{{column}}</option>
+        {% endfor %}
+      </select>
+
+</body>
+</html>

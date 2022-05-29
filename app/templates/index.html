@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Welcome to the Population Analyzer {% endblock %}</h1>
+   <!--<img src="data:image/png;base64, {{ plot_url }}">-->
+
+   <div class="form">
+    <form action="{{ url_for('handle_data') }}" method="post">
+      <select name="column" method="GET" action="/">
+        <option value="{{columnheaders[0]}}" selected>{{columnheaders[0]}}</option>
+        {% for column in columnheaders[1:] %}
+          <option value="{{column}}">{{column}}</option>
+        {% endfor %}
+      </select>
+
+      <select name="c2" method="GET" action="/">
+        <option value="{{columnheaders[0]}}" selected>{{columnheaders[0]}}</option>
+        {% for column in columnheaders[1:] %}
+          <option value="{{column}}">{{column}}</option>
+        {% endfor %}
+      </select>
+
+      <select name="start_year" method="GET" action="/">
+        <option value="{{years[0]}}" selected>{{years[0]}}</option>
+        {% for year in years[1:] %}
+          <option value="{{year}}">{{year}}</option>
+        {% endfor %}
+      </select> 
+
+      <select name="end_year" method="GET" action="/">
+        {% for year in years %}
+          <option value="{{year}}">{{year}}</option>
+        {% endfor %}
+      </select>
+
+      <input class="btn btn-default" type="submit" value="Plot">
+    </form>
+    {% if error %}
+      <p class="error">Error: {{ error }}
+    {% endif %}
+  </div>
+
+  {% include 'result.html' %}
+
+{% endblock %}
