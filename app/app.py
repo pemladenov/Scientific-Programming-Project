@@ -94,11 +94,16 @@ def handle_data():
     cols = df.columns
     df = df[cols].apply(pd.to_numeric, errors='coerce')
     df = df.pct_change()
+   # df.apply(lambda row: row.fillna(row.mean()), axis=1)
+    df.fillna(0, inplace=True)
+
+    #df.at['1980-01-01', ] = 10
     fig = Figure()
+    print(df)
 
     fig = px.line(df, x=df.index, y=df.columns, markers=True, title="Comparison of the populution changes")
-    #fig = px.bar(df, x=df.index, y=df.columns, title="Comparison of the populution changes")
-    
+        
+    fig.update_layout(yaxis_tickformat = '.2%')
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     #graphJSON.append(json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)) 
 
@@ -110,10 +115,10 @@ def index():
     img = io.BytesIO()
     df = pd.read_csv("data/populationbycountry19802010millions.csv")
     df.dropna(inplace = True)
-
+    df = df.sort_values(by=['Unnamed: 0'])
+    print(df)
     columnheaders = df['Unnamed: 0']
     years = list(df.drop(['Unnamed: 0'], axis=1).columns.values)
-    print(years)
 
 
     return render_template('index.html', columnheaders=columnheaders, years=years)
