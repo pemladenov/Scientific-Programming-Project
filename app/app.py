@@ -90,6 +90,7 @@ def handle_data():
     start_year = pd.to_datetime(year1)
     end_year = pd.to_datetime(year2)
     print(end_year)
+    print(start_year)
     df = df[start_year:end_year]
     cols = df.columns
     df = df[cols].apply(pd.to_numeric, errors='coerce')
