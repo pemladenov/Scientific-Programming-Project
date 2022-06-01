@@ -89,7 +89,7 @@ def handle_data():
     df = pd.concat([df1, df2], axis=1)
     start_year = pd.to_datetime(year1)
     end_year = pd.to_datetime(year2)
-
+    print(end_year)
     df = df[start_year:end_year]
     cols = df.columns
     df = df[cols].apply(pd.to_numeric, errors='coerce')
