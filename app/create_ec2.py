@@ -33,8 +33,8 @@ print(conn)
 #Function um mit EC2 instance zu verbinden / mit meinen AWS-Account-Daten
 ec2 = boto3.client('ec2',
                    'eu-central-1',
-                   aws_access_key_id='', 
-                   aws_secret_access_key='')
+                   aws_access_key_id='',  ###enter key id
+                   aws_secret_access_key='') ###enter acess key id
 
 #This function will describe all the instances
 #with their current state 
