@@ -12,6 +12,10 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import plotly.express as px
 import json
+import math
+import random
+import urllib
+
 
 
 sns.set(color_codes=True)
@@ -24,31 +28,41 @@ def build_plot():
 
     img = io.BytesIO()
 
-    y = [1,2,3,4,5]
-    x = [0,2,1,3,4]
-    plt.plot(x,y)
+    no_of_balls = 25
+    x = [random.triangular() for i in range(no_of_balls)]
+    y = [random.gauss(0.5, 0.25) for i in range(no_of_balls)]
+    colors = [random.randint(1, 4) for i in range(no_of_balls)]
+    areas = [math.pi * random.randint(5, 15)**2 for i in range(no_of_balls)]
+    # draw the plot
+    plt.figure()
+    plt.scatter(x, y, s=areas, c=colors, alpha=0.85)
+    plt.axis([0.0, 1.0, 0.0, 1.0])
+
+
     plt.savefig(img, format='png')
     img.seek(0)
 
     plot_url = base64.b64encode(img.getvalue()).decode()
+    return render_template("randomplot.html", img_data=plot_url)
 
     return '<img src="data:image/png;base64,{}">'.format(plot_url)
 
 
+
 def result(self) -> str:
     img = io.BytesIO()
-
+    '''
     y = [1,2,3,4,5]
     x = [0,2,1,3,4]
     plt.plot(x,y)
     plt.savefig(img, format='png')
     img.seek(0)
-
+    '''
     plot_url = base64.b64encode(img.getvalue()).decode()
     
     return render_template('result.html', graph=plot_url)
 
-
+'''
 @app.route('/login', methods=['POST', 'GET'])
 def home():
     error = None
@@ -58,7 +72,7 @@ def home():
         else:
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
-
+'''
 
 def cleanup(dataframe, country):
     df = dataframe.transpose()
@@ -66,7 +80,6 @@ def cleanup(dataframe, country):
     df.columns = [country]
     df.index= pd.to_datetime(df.index)
     return df
-
 
 @app.route('/result', methods=['GET', 'POST'])
 def handle_data():
@@ -94,10 +107,8 @@ def handle_data():
     cols = df.columns
     df = df[cols].apply(pd.to_numeric, errors='coerce')
     df = df.pct_change()
-   # df.apply(lambda row: row.fillna(row.mean()), axis=1)
     df.fillna(0, inplace=True)
 
-    #df.at['1980-01-01', ] = 10
     fig = Figure()
     print(df)
 
@@ -105,7 +116,6 @@ def handle_data():
         
     fig.update_layout(yaxis_tickformat = '.2%')
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    #graphJSON.append(json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)) 
 
     return render_template('result.html', graphJSON=graphJSON)
 
