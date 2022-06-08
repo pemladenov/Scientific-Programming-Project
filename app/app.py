@@ -4,17 +4,14 @@ import matplotlib.pyplot as plt
 import io
 import base64
 import pandas as pd
-import numpy as np
 import seaborn as sns
 import plotly
-import matplotlib.patches as mpatches
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import plotly.express as px
 import json
 import math
 import random
-import urllib
 
 
 
@@ -37,42 +34,19 @@ def build_plot():
     plt.figure()
     plt.scatter(x, y, s=areas, c=colors, alpha=0.85)
     plt.axis([0.0, 1.0, 0.0, 1.0])
-
-
     plt.savefig(img, format='png')
     img.seek(0)
 
     plot_url = base64.b64encode(img.getvalue()).decode()
     return render_template("randomplot.html", img_data=plot_url)
 
-    return '<img src="data:image/png;base64,{}">'.format(plot_url)
-
-
-
 def result(self) -> str:
     img = io.BytesIO()
-    '''
-    y = [1,2,3,4,5]
-    x = [0,2,1,3,4]
-    plt.plot(x,y)
-    plt.savefig(img, format='png')
-    img.seek(0)
-    '''
+
     plot_url = base64.b64encode(img.getvalue()).decode()
     
     return render_template('result.html', graph=plot_url)
 
-'''
-@app.route('/login', methods=['POST', 'GET'])
-def home():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Error Message Text'
-        else:
-            return redirect(url_for('home'))
-    return render_template('login.html', error=error)
-'''
 
 def cleanup(dataframe, country):
     df = dataframe.transpose()
