@@ -1,4 +1,3 @@
-from os import set_handle_inheritable
 from flask import Flask, render_template, url_for, request, Response
 import matplotlib.pyplot as plt
 import io
@@ -12,6 +11,7 @@ import plotly.express as px
 import json
 import math
 import random
+import os
 
 
 
@@ -107,9 +107,11 @@ def index():
 
     return render_template('index.html', columnheaders=columnheaders, years=years)
 
-    
+  
+#if __name__ == "__main__":
+#    app.run(host="0.0.0.0", port=8080, debug=True)
+
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
-
-
-    
+    port = int(os.environ.get('PORT', 8080))
+    app.run(debug=True, host='0.0.0.0', port=port)
