@@ -13,8 +13,6 @@ import math
 import random
 import os
 
-
-
 sns.set(color_codes=True)
 
 
@@ -103,10 +101,12 @@ def index():
     print(df)
     columnheaders = df['Unnamed: 0']
     years = list(df.drop(['Unnamed: 0'], axis=1).columns.values)
-
+    print (columnheaders)
+    print (years)
 
     return render_template('index.html', columnheaders=columnheaders, years=years)
 
+<<<<<<< HEAD:app.py
   
 #if __name__ == "__main__":
 #    app.run(host="0.0.0.0", port=8080, debug=True)
@@ -115,3 +115,10 @@ def index():
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))
     app.run(debug=True, host='0.0.0.0', port=port)
+=======
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)
+
+
+    
+>>>>>>> 6ce43e2b43352bb8791cf3eca7cc374e7aacd2f8:app/app.py
