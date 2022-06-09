@@ -13,8 +13,6 @@ import json
 import math
 import random
 
-
-
 sns.set(color_codes=True)
 
 
@@ -103,13 +101,13 @@ def index():
     print(df)
     columnheaders = df['Unnamed: 0']
     years = list(df.drop(['Unnamed: 0'], axis=1).columns.values)
-
+    print (columnheaders)
+    print (years)
 
     return render_template('index.html', columnheaders=columnheaders, years=years)
 
-    
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
 
 
     
